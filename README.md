@@ -1,15 +1,11 @@
 # ITensorGPU: Intelligent Tensors with GPU acceleration
 
-[![codecov](https://codecov.io/gh/ITensor/ITensorGPU.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/ITensor/ITensorGPU.jl)
-
-[![gitlab-ci](https://gitlab.com/JuliaGPU/ITensorGPU-jl/badges/master/pipeline.svg)](https://gitlab.com/JuliaGPU/ITensorGPU-jl/commits/master)
-
 This package extends the functionality of [ITensors.jl](https://github.com/ITensor/ITensors.jl) to make use of CUDA-enabled GPUs to accelerate tensor contractions and factorizations. It sits on top of the wonderful [CUDA.jl](https://github.com/JuliaGPU/CUDA.jl) package and uses NVIDIA's [cuTENSOR](https://developer.nvidia.com/cutensor) library for high-performance tensor operations.
 
 ## Installing ITensorGPU.jl
 
 Dependencies:
-  - [Julia 1.3 or later](https://julialang.org/downloads/)
+  - [Julia 1.6-1.9](https://julialang.org/downloads/)
   - [CUDA 10.1 or later](https://developer.nvidia.com/cuda-downloads) -- Currently only NVIDIA GPUs are supported. NVIDIA drivers are required so that Julia can make use of the NVIDIA GPU on your system.
   - [cuTENSOR v1.0.0 or later](https://developer.nvidia.com/cutensor) -- A specialized library for perfoming permutation-free tensor contractions on the GPU. `libcutensor.so` needs to be in your `LD_LIBRARY_PATH` so that `CUDA.jl` will be able to find it.
   - [ITensors.jl](https://itensor.github.io/ITensors.jl/stable/#Installation-1)
