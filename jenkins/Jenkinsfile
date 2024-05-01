@@ -27,7 +27,7 @@ pipeline {
           }
           steps {
             sh '''
-              julia -e 'using Pkg; Pkg.add(name="NDTensors", version="0.1"); Pkg.add(name="ITensors"); Pkg.develop(path="./ITensorGPU"); Pkg.instantiate(); Pkg.test("ITensorGPU");'
+              julia -e 'using Pkg; Pkg.develop(path="."); Pkg.test("ITensorGPU");'
               '''
           }
         }
@@ -51,7 +51,7 @@ pipeline {
           }
           steps {
             sh '''
-              julia -e 'using Pkg; Pkg.add(name="NDTensors", version="0.1"); Pkg.add(name="ITensors"); Pkg.develop(path="./ITensorGPU"); Pkg.instantiate(); Pkg.test("ITensorGPU");'
+              julia -e 'using Pkg; Pkg.develop(path="."); Pkg.test("ITensorGPU");'
             '''
           }
         }
