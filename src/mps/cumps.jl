@@ -1,3 +1,4 @@
+using NDTensors: cu
 # cu(ψ::Union{MPS,MPO}) = map(cu, ψ)
 # cpu(ψ::Union{MPS,MPO}) = map(cpu, ψ)
 
