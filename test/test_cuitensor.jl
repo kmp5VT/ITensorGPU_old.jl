@@ -1,10 +1,8 @@
-using ITensors,
-  ITensorGPU,
-  LinearAlgebra, # For tr()
-  Combinatorics, # For permutations()
-  Random,
-  CUDA,
-  Test
+using ITensorGPU: ITensorGPU, CuArray, CuMatrix, CuVector, cuITensor, randomCuITensor
+using ITensors: Index, IndexSet, ITensor, array, cpu, commonind, dag, δ, dim, inds, norm, permute, prime, randomITensor, scalar, storage
+using LinearAlgebra: svd, qr
+#using CUDA
+using Test: @test, @testset
 
 # gpu tests!
 @testset "cuITensor, Dense{$SType} storage" for SType in (Float64, ComplexF64)
@@ -52,11 +50,7 @@ using ITensors,
       end
     end
   end
-  #=@testset "Test scalar(cuITensor)" begin
-    x = SType(34)
-    A = randomCuITensor(a)
-    @test x==scalar(A)
-  end=#
+
   @testset "Test CuVector(cuITensor)" begin
     v = CuVector(ones(SType, dim(a)))
     A = cuITensor(v, a)
@@ -82,10 +76,7 @@ using ITensors,
     cA = complex(A)
     @test complex.(CuArray(A)) == CuArray(cA)
   end
-  #@testset "Test exp(cuITensor)" begin
-  #  A  = randomCuITensor(SType,i,i')
-  #  @test CuArray(exp(A,i,i')) ≈ exp(CuArray(A))
-  #end
+
   @testset "Test add cuITensors" begin
     dA = randomCuITensor(SType, i, j, k)
     dB = randomCuITensor(SType, k, i, j)
@@ -118,28 +109,12 @@ using ITensors,
       @test cpu(U_gpu) * cpu(S_gpu) * cpu(V_gpu) ≈ U_cpu * S_cpu * V_cpu
     end
 
-    #=@testset "Test SVD truncation" begin
-        M = randn(4,4)
-        (U,s,V) = svd(M)
-        ii = Index(4)
-        jj = Index(4)
-        S = Diagonal(s)
-        T = cuITensor(vec(CuArray(U*S*V')),IndexSet(ii,jj))
-        (U,S,V) = svd(T,ii;maxm=2)
-        @test norm(U*S*V-T)≈sqrt(s[3]^2+s[4]^2)
-    end=#
-
     @testset "Test QR decomposition of a cuITensor" begin
       Q, R = qr(A, (i, l))
       q = commonind(Q, R)
       @test cpu(A) ≈ cpu(Q * R)
       @test cpu(Q * dag(prime(Q, q))) ≈ δ(SType, q, q') atol = 1e-14
     end
-
-    #=@testset "Test polar decomposition of a cuITensor" begin
-      U,P = polar(A,(k,l))
-      @test cpu(A)≈cpu(U*P)
-    end=#
 
   end # End ITensor factorization testset
 end # End Dense storage test

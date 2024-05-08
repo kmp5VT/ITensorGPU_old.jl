@@ -1,10 +1,8 @@
-using ITensors,
-  ITensors.NDTensors,
-  ITensorGPU,
-  LinearAlgebra, # For tr()
-  Combinatorics, # For permutations()
-  CUDA,
-  Test
+using ITensorGPU: CuArray, CuMatrix, CuVector, cuITensor
+using ITensors: ITensors, Index, IndexSet, itensor, randomITensor, permute, replaceind, tensor
+using ITensors.NDTensors: NDTensors, Diag, array, cpu
+using LinearAlgebra: diagm, rand
+using Test: @test, @testset, @test_broken
 
 @testset "cuITensor $T Contractions" for T in (Float64, ComplexF64)
   mi, mj, mk, ml, ma = 2, 3, 4, 5, 6, 7
@@ -22,9 +20,9 @@ using ITensors,
     Ajl = cuITensor(randomITensor(T, j, l))
     Akl = cuITensor(randomITensor(T, k, l))
     Dv = rand(T, mi)
-    D = itensor(ITensors.tensor(NDTensors.Diag(CuVector(Dv)), IndexSet(i, i')))
+    D = itensor(tensor(Diag(CuVector(Dv)), IndexSet(i, i')))
     Ev = rand(T, mi)
-    E = itensor(ITensors.tensor(NDTensors.Diag(CuVector(Ev)), IndexSet(i, i'')))
+    E = itensor(tensor(Diag(CuVector(Ev)), IndexSet(i, i'')))
     @testset "Test contract cuITensors (Matrix*Diag -> Matrix)" begin
       C = Aij * D
       @test collect(CuArray(C)) ≈ collect(CuMatrix(Aij, j, i)) * diagm(0 => Dv)
@@ -35,14 +33,14 @@ using ITensors,
       @test collect(cC) ≈ diagm(0 => Ev) * diagm(0 => Dv)
     end
     @testset "Test contract cuDiagITensors (UniformDiag*Diag -> Diag)" begin
-      scal = itensor(ITensors.tensor(NDTensors.Diag(2.0), IndexSet(i, i'')))
+      scal = itensor(tensor(Diag(2.0), IndexSet(i, i'')))
       C = scal * D
       @test collect(CuArray(C)) ≈ 2.0 .* diagm(0 => Dv)
       C = D * scal
       @test collect(CuArray(C)) ≈ 2.0 .* diagm(0 => Dv)
     end
     @testset "Test contract cuITensors (Matrix*UniformDiag -> Matrix)" begin
-      scal = itensor(ITensors.tensor(NDTensors.Diag(T(2.0)), IndexSet(i, i')))
+      scal = itensor(tensor(Diag(T(2.0)), IndexSet(i, i')))
       C = scal * Aij
       @test cpu(C) ≈ 2.0 * cpu(replaceind(Aij, i, i')) atol = 1e-4
       C = Aij * scal
