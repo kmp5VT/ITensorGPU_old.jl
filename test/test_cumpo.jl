@@ -1,5 +1,6 @@
-using ITensors, ITensorGPU, Test
-
+using ITensors: Index, ITensor, MPO, MPS, randomMPO, add, contract, dag, data, hasind, inner, maxlinkdim, orthogonalize!, prime, prime!, replaceind!, siteinds
+using ITensorGPU: cuITensor, cuMPO, randomCuITensor, randomCuMPO, randomCuMPS
+using Test: @test, @testset, @test_throws
 @testset "CuMPO Basics" begin
   N = 6
   sites = [Index(2, "Site") for n in 1:N]
@@ -19,13 +20,13 @@ using ITensors, ITensorGPU, Test
   @test hasind(P[1], prime(sites[1]))
 
   K = randomCuMPO(sites)
-  K_ = cuMPO(ITensors.data(K))
-  @test all(ITensors.data(K) .== ITensors.data(K_))
+  K_ = cuMPO(data(K))
+  @test all(data(K) .== data(K_))
 
   s = siteinds("S=1/2", N)
   L = randomMPO(s)
   K = cuMPO(L)
-  @test all(ITensors.data(cpu(K)) .== ITensors.data(cpu(L)))
+  @test all(data(cpu(K)) .== data(cpu(L)))
   @testset "orthogonalize" begin
     phi = randomCuMPS(sites)
     K = randomCuMPO(sites)
